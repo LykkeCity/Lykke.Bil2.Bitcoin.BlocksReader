@@ -33,14 +33,12 @@ RabbitConnString:
 MessageListeningParallelism:
     settings-key: Bitcoin-BlocksReader-MessageListeningParallelism
 
-
-# Define specific blockchain settings below, if necessary.
-#
-# For example:
-#
-# NodeUrl:
-#   settings-key: Bitcoin-NodeUrl
-# NodeUsername:
-#   settings-key: Bitcoin-Nodeassword
-# NodePassword:
-#   settings-key: Bitcoin-NodePassword
+Network:
+    settings-key: Bitcoin-Network
+Rpc:
+    UserName:
+        settings-key: Bitcoin-RpcUserName
+    Password:
+        settings-key: Bitcoin-RpcPassword
+    Host:
+        settings-key: Bitcoin-RpcHost

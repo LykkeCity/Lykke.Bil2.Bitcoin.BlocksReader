@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System;
+using System.Net;
 using JetBrains.Annotations;
 using Lykke.Bil2.Bitcoin.BlocksReader.Services;
 using Lykke.Bil2.Bitcoin.BlocksReader.Settings;
@@ -7,6 +8,8 @@ using Lykke.Bil2.Sdk.BlocksReader;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Lykke.Bil2.Sdk.BlocksReader.Services;
+using NBitcoin;
+using NBitcoin.RPC;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader
 {
@@ -27,18 +30,12 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader
                 options.BlockReaderFactory = ctx =>
                     new BlockReader
                     (
-                        /* TODO: Provide specific settings and dependencies, if necessary */
+                        new RPCClient(
+                            new NetworkCredential(ctx.Settings.CurrentValue.Rpc.UserName, ctx.Settings.CurrentValue.Rpc.Password),
+                            new Uri(ctx.Settings.CurrentValue.Rpc.Host),
+                            Network.GetNetwork(ctx.Settings.CurrentValue.Network)),
+                        Network.GetNetwork(ctx.Settings.CurrentValue.Network)
                     );
-
-
-                // To access settings for any purpose,
-                // usually, to register additional services like blockchain client,
-                // uncomment code below:
-                //
-                // options.UseSettings = settings =>
-                // {
-                //     services.AddSingleton<IService>(new ServiceImpl(settings.CurrentValue.ServiceSettingValue));
-                // };
             });
         }
 

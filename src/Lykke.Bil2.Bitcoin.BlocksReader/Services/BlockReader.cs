@@ -1,95 +1,67 @@
-using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Bil2.Contract.BlocksReader.Events;
-using Lykke.Bil2.Sdk.BlocksReader.Services;
 using Lykke.Bil2.Contract.Common;
-using Lykke.Bil2.Contract.TransactionsExecutor;
+using Lykke.Bil2.Contract.Common.Extensions;
+using Lykke.Bil2.Sdk.BlocksReader.Services;
+using NBitcoin;
+using NBitcoin.RPC;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
 {
     public class BlockReader : IBlockReader
     {
-        public BlockReader(/* TODO: Provide specific settings and dependencies, if necessary */)
+        private readonly RPCClient _rpcClient;
+        private readonly Network _network;
+
+        public BlockReader(RPCClient rpcClient, Network network)
         {
+            _rpcClient = rpcClient;
+            _network = network;
         }
 
-        public Task ReadBlockAsync(long blockNumber, IBlockListener listener)
+
+        public async Task ReadBlockAsync(long blockNumber, IBlockListener listener)
         {
-            // TODO: Process block with specified number, emit header and transaction(s) events
-            //
-            // For example
-            //
-            // var block = ...;
-            //
-            // listener.HandleHeaderAsync(new BlockHeaderReadEvent(
-            //     block.Number,
-            //     block.Hash,
-            //     block.Time,
-            //     block.Raw.Length,
-            //     block.Transactions.Count,
-            //     block.Previous.Hash
-            // ));
+            var block = await _rpcClient.GetBlockAsync((int) blockNumber);
 
-            // for (int i = 0; i < block.Transactions.Length; i++)
-            // {
-            //     var tx = block.Transactions[i];
+            //TODO handle Invalid block number
 
-            //     if (tx.State == "SUCCESS")
-            //     {
-            //
-            //         // If blockchain uses amount transfer scheme (is JSON-based) then emit TransferAmountTransactionExecutedEvent
-            //
-            //         listener.HandleExecutedTransactionAsync(
-            //             tx.Raw.ToBase58(),
-            //             new TransferAmountTransactionExecutedEvent(
-            //                 block.Hash,
-            //                 i,
-            //                 tx.Hash,
-            //                 tx.Actions.SelectMany(act =>
-            //                 {
-            //                     yield return new BalanceChange("0", act.ActionId, act.Token.Id, CoinsChange.FromDecimal((-1) * act.Amount, act.Token.Accuracy), act.From);
-            //                     yield return new BalanceChange("1", act.ActionId, act.Token.Id, CoinsChange.FromDecimal(act.Amount, act.Token.Accuracy), act.To);
-            //                 }),
-            //                 fee: null,
-            //                 isIrreversible: true
-            //             )
-            //         );
-            //
-            //         // If blockchain uses coins transfer scheme (is UTXO-based) then emit TransferCoinsTransactionExecutedEvent
-            //
-            //         listener.HandleExecutedTransactionAsync(
-            //             tx.Raw.ToBase58(),
-            //             new TransferCoinsTransactionExecutedEvent(
-            //                 block.Hash,
-            //                 i,
-            //                 tx.Hash,
-            //                 tx.Outputs.Select(vout => new ReceivedCoin(vout.Number, "BTC", CoinsAmount.FromDecimal(vout.Amount, 8), vout.Address)),
-            //                 tx.Inputs.Select(vin => new CoinReference(vin.Hash, vin.Number)),
-            //                 new Dictionary<AssetId, CoinsAmount> { { "BTC", CoinsAmount.FromDecimal(tx.Fee) } },
-            //                 isIrreversible: null
-            //             )
-            //         );
-            //     }
-            //
-            //     if (tx.State == "FAILURE")
-            //     {
-            //         listener.HandleFailedTransactionAsync(
-            //             tx.Raw.ToBase58(),
-            //             new TransactionFailedEvent(
-            //                 block.Hash,
-            //                 i,
-            //                 tx.Hash,
-            //                 TransactionBroadcastingError.RebuildRequired,
-            //                 tx.Error,
-            //                 fee: null
-            //             )
-            //         );
-            //     }
-            // }
+            await listener.HandleHeaderAsync(new BlockHeaderReadEvent(
+                blockNumber,
+                block.Header.GetHash().ToString(),
+                block.Header.BlockTime.DateTime,
+                block.GetSerializedSize(),
+                block.Transactions.Count,
+                block.Header.HashPrevBlock.ToString()
+            ));
 
+            for (int i = 0; i < block.Transactions.Count; i++)
+            {
+                var tx = block.Transactions[i];
 
-            throw new System.NotImplementedException();
+                await listener.HandleExecutedTransactionAsync(
+                    tx.ToHex().ToBase58(),
+                    new TransferCoinsTransactionExecutedEvent(
+                        block.Header.GetHash().ToString(),
+                        i,
+                        tx.GetHash().ToString(),
+                        tx.Outputs.AsIndexedOutputs()
+                            .Where(vout => vout.TxOut.ScriptPubKey?.GetDestinationAddress(_network)?.ToString() != null)
+                            .Select(vout => new ReceivedCoin(
+                                (int)vout.N,
+                                "BTC",
+                                CoinsAmount.FromDecimal(vout.TxOut.Value.ToUnit(MoneyUnit.BTC), 8),
+                                new Address(vout.TxOut.ScriptPubKey?.GetDestinationAddress(_network).ToString())))
+                            .ToList(),
+                        tx.Inputs.AsIndexedInputs()
+                            .Where(p => !p.PrevOut.IsNull)
+                            .Select(vin => new CoinReference(vin.PrevOut.Hash.ToString(), (int) vin.PrevOut.N))
+                            .ToList(),
+                        isIrreversible: false
+                    )
+                );
+            }
         }
     }
 }

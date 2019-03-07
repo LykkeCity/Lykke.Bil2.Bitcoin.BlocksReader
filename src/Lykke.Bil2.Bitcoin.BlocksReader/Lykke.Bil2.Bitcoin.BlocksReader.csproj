@@ -24,5 +24,6 @@
 
   <ItemGroup>
     <PackageReference Include="Lykke.Bil2.Sdk.BlocksReader" Version="1.0.0-beta.3" />
+    <PackageReference Include="NBitcoin" Version="4.1.1.86" />
   </ItemGroup>
 </Project>

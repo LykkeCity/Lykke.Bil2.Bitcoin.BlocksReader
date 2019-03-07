@@ -8,16 +8,8 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Settings
     /// </summary>
     public class AppSettings : BaseBlocksReaderSettings<DbSettings>
     {
-        // Implement specific blockchain settings, if necessary.
-        // Mark sensitive data with SecureSettingsAttribute to prevent leaks.
-        //
-        // For example:
-        //
-        // public string NodeUrl { get; set; }
-        //
-        // public string NodeRpcUsername { get; set; }
-        //
-        // [SecureSettings]
-        // public string NodeRpcPassword { get; set; }
+        public string Network { get; set; }
+
+        public RpcClientSettings Rpc { get; set; }
     }
 }
