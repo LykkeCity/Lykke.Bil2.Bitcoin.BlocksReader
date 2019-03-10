@@ -23,7 +23,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
             _blockListenerMock = new Mock<IBlockListener>();
         }
 
-        [TestCase()]
+        [TestCase]
         [Fact]
         public async Task Can_Parse_Block()
         {
@@ -64,6 +64,19 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
                 Times.Once);
 
             _blockListenerMock.VerifyNoOtherCalls();
+        }
+
+
+        [TestCase]
+        [Fact]
+        public async Task Can_Proceed_Invalid_Block_Num()
+        {
+            var blReader = new BlockReader(_rpcClient, Network.TestNet);
+
+            await blReader.ReadBlockAsync(int.MaxValue, _blockListenerMock.Object);
+
+            _blockListenerMock.Verify(x => x.HandleBlockNotFoundAsync(It.Is<BlockNotFoundEvent>(ev => ev.BlockNumber == int.MaxValue)),
+                Times.Once);
         }
     }
 }

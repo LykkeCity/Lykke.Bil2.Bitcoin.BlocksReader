@@ -1,4 +1,3 @@
-using Lykke.Bil2.Sdk.BlocksReader;
 using Lykke.Bil2.Sdk.BlocksReader.Settings;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Settings

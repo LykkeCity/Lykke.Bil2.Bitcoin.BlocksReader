@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System;
 using System.Net;
 using JetBrains.Annotations;
@@ -7,7 +6,6 @@ using Lykke.Bil2.Bitcoin.BlocksReader.Settings;
 using Lykke.Bil2.Sdk.BlocksReader;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Lykke.Bil2.Sdk.BlocksReader.Services;
 using NBitcoin;
 using NBitcoin.RPC;
 

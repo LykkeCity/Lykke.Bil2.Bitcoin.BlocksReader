@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers;
 using Lykke.Bil2.Contract.BlocksReader.Events;
 using Lykke.Bil2.Contract.Common;
 using Lykke.Bil2.Contract.Common.Extensions;
@@ -23,9 +24,19 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
 
         public async Task ReadBlockAsync(long blockNumber, IBlockListener listener)
         {
-            var block = await _rpcClient.GetBlockAsync((int) blockNumber);
+            Block block;
 
-            //TODO handle Invalid block number
+            try
+            {
+
+                block = await _rpcClient.GetBlockAsync((int)blockNumber);
+            }
+            catch (RPCException e) when(e.RPCCode == RPCErrorCode.RPC_INVALID_PARAMETER)
+            {
+                await listener.HandleBlockNotFoundAsync(new BlockNotFoundEvent(blockNumber));
+
+                return;
+            }
 
             await listener.HandleHeaderAsync(new BlockHeaderReadEvent(
                 blockNumber,
@@ -39,7 +50,6 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
             for (int i = 0; i < block.Transactions.Count; i++)
             {
                 var tx = block.Transactions[i];
-
                 await listener.HandleExecutedTransactionAsync(
                     tx.ToHex().ToBase58(),
                     new TransferCoinsTransactionExecutedEvent(
@@ -47,12 +57,11 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                         i,
                         tx.GetHash().ToString(),
                         tx.Outputs.AsIndexedOutputs()
-                            .Where(vout => vout.TxOut.ScriptPubKey?.GetDestinationAddress(_network)?.ToString() != null)
                             .Select(vout => new ReceivedCoin(
                                 (int)vout.N,
                                 "BTC",
                                 CoinsAmount.FromDecimal(vout.TxOut.Value.ToUnit(MoneyUnit.BTC), 8),
-                                new Address(vout.TxOut.ScriptPubKey?.GetDestinationAddress(_network).ToString())))
+                                new Address(vout.TxOut.ScriptPubKey.ExtractAddress(_network))))
                             .ToList(),
                         tx.Inputs.AsIndexedInputs()
                             .Where(p => !p.PrevOut.IsNull)
