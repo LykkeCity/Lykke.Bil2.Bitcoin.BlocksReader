@@ -30,7 +30,6 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
 
             try
             {
-
                 block = await _rpcClient.GetBlockAsync((int)blockNumber);
             }
             catch (RPCException e) when(e.RPCCode == RPCErrorCode.RPC_INVALID_PARAMETER)
