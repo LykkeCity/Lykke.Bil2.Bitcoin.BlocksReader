@@ -44,10 +44,9 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
                     .ToString();
             }
 
-            //TODO return null aftec contract update
             if (IsUnrecognizedAddress(script))
             {
-                return $"Unrecognized address {script}";
+                return null;
             }
 
             throw new FormatException($"Unable to extract address from {script}");
