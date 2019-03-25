@@ -8,6 +8,7 @@ using Lykke.Bil2.Contract.Common.Extensions;
 using Lykke.Bil2.Sdk.BlocksReader.Services;
 using Lykke.Numerics;
 using NBitcoin;
+using NBitcoin.DataEncoders;
 using NBitcoin.RPC;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
@@ -39,9 +40,13 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                 return;
             }
 
+            var blockHash = block.Header.GetHash().ToString();
+            
+            await listener.HandleRawBlockAsync(Encoders.Hex.EncodeData(block.ToBytes()).ToBase58(), blockHash);
+            
             await listener.HandleHeaderAsync(new BlockHeaderReadEvent(
                 blockNumber,
-                block.Header.GetHash().ToString(),
+                blockHash,
                 block.Header.BlockTime.DateTime,
                 block.GetSerializedSize(),
                 block.Transactions.Count,
@@ -55,7 +60,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                 await listener.HandleExecutedTransactionAsync(
                     tx.ToHex().ToBase58(),
                     new TransferCoinsTransactionExecutedEvent(
-                        block.Header.GetHash().ToString(),
+                        blockHash,
                         i,
                         tx.GetHash().ToString(),
                         tx.Outputs.AsIndexedOutputs()
