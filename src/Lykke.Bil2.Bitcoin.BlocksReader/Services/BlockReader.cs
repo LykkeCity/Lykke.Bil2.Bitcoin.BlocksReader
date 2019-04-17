@@ -44,15 +44,6 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
             
             await listener.HandleRawBlockAsync(Encoders.Hex.EncodeData(block.ToBytes()).ToBase58(), blockHash);
             
-            await listener.HandleHeaderAsync(new BlockHeaderReadEvent(
-                blockNumber,
-                blockHash,
-                block.Header.BlockTime.DateTime,
-                block.GetSerializedSize(),
-                block.Transactions.Count,
-                block.Header.HashPrevBlock.ToString()
-            ));
-
             for (int i = 0; i < block.Transactions.Count; i++)
             {
                 var tx = block.Transactions[i];
@@ -83,6 +74,15 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                     )
                 );
             }
+
+            await listener.HandleHeaderAsync(new BlockHeaderReadEvent(
+                blockNumber,
+                blockHash,
+                block.Header.BlockTime.DateTime,
+                block.GetSerializedSize(),
+                block.Transactions.Count,
+                block.Header.HashPrevBlock.ToString()
+            ));
         }
     }
 }
