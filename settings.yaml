@@ -25,11 +25,6 @@ Db:
         types:
             - AzureTableStorage
 
-RabbitConnString:
-    settings-key: Bitcoin-BlocksReader-RabbitConnString
-    types:
-        - RabbitMq
-
 MessageListeningParallelism:
     settings-key: Bitcoin-BlocksReader-MessageListeningParallelism
 
