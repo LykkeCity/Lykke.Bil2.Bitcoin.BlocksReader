@@ -25,11 +25,9 @@ Db:
         types:
             - AzureTableStorage
 
-MessageListeningParallelism:
-    settings-key: Bitcoin-BlocksReader-MessageListeningParallelism
-
 Network:
     settings-key: Bitcoin-Network
+
 Rpc:
     UserName:
         settings-key: Bitcoin-RpcUserName
