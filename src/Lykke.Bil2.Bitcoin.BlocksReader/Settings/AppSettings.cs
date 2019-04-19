@@ -5,7 +5,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Settings
     /// <summary>
     /// Specific blockchain settings
     /// </summary>
-    public class AppSettings : BaseBlocksReaderSettings<DbSettings>
+    public class AppSettings : BaseBlocksReaderSettings<DbSettings, RabbitMqSettings>
     {
         public string Network { get; set; }
 

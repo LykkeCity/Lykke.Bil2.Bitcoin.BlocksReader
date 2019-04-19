@@ -6,6 +6,7 @@ using Lykke.Bil2.Contract.BlocksReader.Events;
 using Lykke.Bil2.Contract.Common;
 using Lykke.Bil2.Contract.Common.Extensions;
 using Lykke.Bil2.Sdk.BlocksReader.Services;
+using Lykke.Bil2.SharedDomain;
 using Lykke.Numerics;
 using NBitcoin;
 using NBitcoin.DataEncoders;
@@ -28,7 +29,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
         public async Task ReadBlockAsync(long blockNumber, IBlockListener listener)
         {
             Block block;
-
+            
             try
             {
                 block = await _rpcClient.GetBlockAsync((int)blockNumber);
@@ -41,8 +42,8 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
             }
 
             var blockHash = block.Header.GetHash().ToString();
-            
-            await listener.HandleRawBlockAsync(Encoders.Hex.EncodeData(block.ToBytes()).ToBase58(), blockHash);
+
+            await listener.HandleRawBlockAsync(Encoders.Hex.EncodeData(block.ToBytes()).ToBase58(), new BlockId(blockHash));
             
             for (int i = 0; i < block.Transactions.Count; i++)
             {
@@ -68,7 +69,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                             .ToList(),
                         tx.Inputs.AsIndexedInputs()
                             .Where(p => !p.PrevOut.IsNull)
-                            .Select(vin => new CoinReference(vin.PrevOut.Hash.ToString(), (int) vin.PrevOut.N))
+                            .Select(vin => new CoinId(vin.PrevOut.Hash.ToString(), (int) vin.PrevOut.N))
                             .ToList(),
                         isIrreversible: false
                     )
