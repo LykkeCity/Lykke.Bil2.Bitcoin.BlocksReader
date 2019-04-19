@@ -39,6 +39,5 @@ Rpc:
         settings-key: Bitcoin-RpcHost
 
 RabbitMq:
-	ConnString:
-		settings-key: Bitcoin-BlocksReader-RabbitConnString
-		
+    ConnString:
+        settings-key: Bitcoin-RabbitConnString	
