@@ -42,3 +42,8 @@ Rpc:
         settings-key: Bitcoin-RpcPassword
     Host:
         settings-key: Bitcoin-RpcHost
+
+RabbitMq:
+	ConnString:
+		settings-key: Bitcoin-BlocksReader-RabbitConnString
+		
