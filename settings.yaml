@@ -39,3 +39,61 @@ Rpc:
 RabbitMq:
     ConnString:
         settings-key: Bitcoin-RabbitConnString	
+    Vhost:
+        settings-key: Bitcoin-BlocksReader-RabbitVhost
+        types:
+            - Optional
+
+# 4 by default
+
+    MessageConsumersCount:
+        settings-key: Bitcoin-BlocksReader-MessageConsumersCount
+        types:
+            - Optional
+
+# 8 by default
+
+    MessageProcessorsCount:
+        settings-key: Bitcoin-BlocksReader-MessageProcessorsCount
+        types:
+            - Optional
+    
+# "00:00:30" by default
+
+    DefaultFirstLevelRetryTimeout:
+        settings-key: Bitcoin-BlocksReader-DefaultFirstLevelRetryTimeout
+        types:
+            - Optional
+
+# "00:10:00" by default
+
+    MaxFirstLevelRetryMessageAge:
+        settings-key: Bitcoin-BlocksReader-MaxFirstLevelRetryMessageAge
+        types:
+            - Optional
+
+# 20 by default
+
+    MaxFirstLevelRetryCount:
+        settings-key: Bitcoin-BlocksReader-MaxFirstLevelRetryCount
+        types:
+            - Optional
+
+# 1000 by default
+
+    FirstLevelRetryQueueCapacity:
+        settings-key: Bitcoin-BlocksReader-FirstLevelRetryQueueCapacity
+        types:
+            - Optional
+
+# 500 by default
+
+    ProcessingQueueCapacity:
+        settings-key: Bitcoin-BlocksReader-ProcessingQueueCapacity
+        types:
+            - Optional
+
+LastIrreversibleBlockMonitoringPeriod:
+    settings-key: Bitcoin-BlocksReader-LastIrreversibleBlockMonitoringPeriod
+    types:
+        - Optional
