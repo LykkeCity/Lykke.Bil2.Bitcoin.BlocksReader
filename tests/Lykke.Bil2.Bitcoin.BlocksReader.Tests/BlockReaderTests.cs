@@ -69,8 +69,10 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
                     )),
                 Times.Once);
 
+            var tx3Bytes = Encoders.Hex.DecodeData("0100000001f4fef6f2bba226d6742abc945c5c658fdce49e8a08b980c52e3a04fa52ea9642010000006a47304402204165755bf17d61bef32bbc5d8a91b4b587115d32c8cfd1446f68ff4819cb1fb302207240e405fbe471af0b6819318d50ae1c9f0174da048a5119ded7730db0ad692801210218724079a342c0385cee4944a1e4434aa4a44606520c107ae772839821f8b4fcffffffff024099eb02000000001976a914a7f48354c754828a6b673db5c8340110daa577f288ac40420f000000000017a914e7c08818e2c00a279e3946777b9a76f5fe44bdb48700000000");
+
             _blockListenerMock.Verify(x => x.HandleExecutedTransactionAsync(
-                    It.Is<Base64String>(p => p.DecodeToString() == "0100000001f4fef6f2bba226d6742abc945c5c658fdce49e8a08b980c52e3a04fa52ea9642010000006a47304402204165755bf17d61bef32bbc5d8a91b4b587115d32c8cfd1446f68ff4819cb1fb302207240e405fbe471af0b6819318d50ae1c9f0174da048a5119ded7730db0ad692801210218724079a342c0385cee4944a1e4434aa4a44606520c107ae772839821f8b4fcffffffff024099eb02000000001976a914a7f48354c754828a6b673db5c8340110daa577f288ac40420f000000000017a914e7c08818e2c00a279e3946777b9a76f5fe44bdb48700000000"),
+                    It.Is<Base64String>(p => p.DecodeToBytes().SequenceEqual(tx3Bytes)),
                 It.Is<TransferCoinsTransactionExecutedEvent>(p => p.TransactionNumber == 2 &&
                                                                   p.TransactionId == "561563fb5321d2805540e388b3f41f0067447833fba4311429588987a348ba54"  &&
                                                                   p.ReceivedCoins.First().Address == "mvq249kND1czVbgbNVYbEWszW5PVeXon6u" &&
@@ -79,8 +81,10 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
                                                                   p.ReceivedCoins.Skip(1).Single().Value == new UMoney(new BigInteger(new Money(0.01m, MoneyUnit.BTC).ToUnit(MoneyUnit.Satoshi)), 8))),
                 Times.Once);
 
+            var tx4Bytes = Encoders.Hex.DecodeData("0100000001a6c097d359de0fe589bb96b09a3a2f52a0320338a90c3cc4f8da2227a1a94633000000006a47304402201e558fa724ba1b38eb14bbd22995ab34b4e87f6391b82c9cee2fd3f29e39ca4a02200bf77f15ea599a840c64a992535e35976a467e6c8ebfca9f789347d0935ce9a001210218724079a342c0385cee4944a1e4434aa4a44606520c107ae772839821f8b4fcffffffff0293a16301000000001976a914a7f48354c754828a6b673db5c8340110daa577f288ac40420f000000000017a914e7c08818e2c00a279e3946777b9a76f5fe44bdb48700000000");
+
             _blockListenerMock.Verify(x => x.HandleExecutedTransactionAsync(
-                It.Is<Base64String>(p => p.DecodeToString() == "0100000001a6c097d359de0fe589bb96b09a3a2f52a0320338a90c3cc4f8da2227a1a94633000000006a47304402201e558fa724ba1b38eb14bbd22995ab34b4e87f6391b82c9cee2fd3f29e39ca4a02200bf77f15ea599a840c64a992535e35976a467e6c8ebfca9f789347d0935ce9a001210218724079a342c0385cee4944a1e4434aa4a44606520c107ae772839821f8b4fcffffffff0293a16301000000001976a914a7f48354c754828a6b673db5c8340110daa577f288ac40420f000000000017a914e7c08818e2c00a279e3946777b9a76f5fe44bdb48700000000"),
+                It.Is<Base64String>(p => p.DecodeToBytes().SequenceEqual(tx4Bytes)),
                 It.Is<TransferCoinsTransactionExecutedEvent>(p => p.TransactionId == "2e9dc9e1e5ac5b8839018b490de942f1992bb8f3dd90eb93c5ecd69cdafbe6f4")),
                 Times.Once);
 
