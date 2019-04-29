@@ -10,11 +10,11 @@ using Moq;
 using NBitcoin;
 using NBitcoin.RPC;
 using NUnit.Framework;
-using Xunit;
 using Money = NBitcoin.Money;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
 {
+    [TestFixture]
     public class BlockReaderTests
     {
         private readonly RPCClient _rpcClient;
@@ -26,8 +26,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
             _blockListenerMock = new Mock<IBlockListener>();
         }
 
-        [TestCase]
-        [Fact]
+        [Test]
         public async Task Can_Parse_Block()
         {
             var blReader = new BlockReader(_rpcClient, Network.TestNet);
@@ -82,8 +81,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
         }
 
 
-        [TestCase]
-        [Fact]
+        [Test]
         public async Task Can_Proceed_Invalid_Block_Num()
         {
             var blReader = new BlockReader(_rpcClient, Network.TestNet);
