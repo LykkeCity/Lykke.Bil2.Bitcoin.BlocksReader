@@ -3,13 +3,11 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers;
 using Lykke.Bil2.Contract.BlocksReader.Events;
-using Lykke.Bil2.Contract.Common;
-using Lykke.Bil2.Contract.Common.Extensions;
 using Lykke.Bil2.Sdk.BlocksReader.Services;
 using Lykke.Bil2.SharedDomain;
+using Lykke.Bil2.SharedDomain.Extensions;
 using Lykke.Numerics;
 using NBitcoin;
-using NBitcoin.DataEncoders;
 using NBitcoin.RPC;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
@@ -43,14 +41,14 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
 
             var blockHash = block.Header.GetHash().ToString();
 
-            await listener.HandleRawBlockAsync(Encoders.Hex.EncodeData(block.ToBytes()).ToBase58(), new BlockId(blockHash));
+            await listener.HandleRawBlockAsync(block.ToBytes().EncodeToBase64(), new BlockId(blockHash));
             
             for (int i = 0; i < block.Transactions.Count; i++)
             {
                 var tx = block.Transactions[i];
 
                 await listener.HandleExecutedTransactionAsync(
-                    tx.ToHex().ToBase58(),
+                    tx.ToBytes().EncodeToBase64(),
                     new TransferCoinsTransactionExecutedEvent(
                         blockHash,
                         i,
