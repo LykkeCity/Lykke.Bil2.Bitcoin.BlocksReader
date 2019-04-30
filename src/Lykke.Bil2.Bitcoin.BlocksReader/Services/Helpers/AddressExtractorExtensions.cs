@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Common;
+using IdentityModel;
 using NBitcoin;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
@@ -42,6 +44,20 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
             {
                 return PayToWitPubKeyHashTemplate.Instance.ExtractScriptPubKeyParameters(script).GetAddress(network)
                     .ToString();
+            }
+
+            if (PayToMultiSigTemplate.Instance.CheckScriptPubKey(script))
+            {
+                var pubKeys = PayToMultiSigTemplate.Instance.ExtractScriptPubKeyParameters(script);
+
+                var addresses = pubKeys.PubKeys.Select(p => p.GetAddress(network).ToString()).OrderBy(p => p).ToList();
+
+                if (addresses.Count == 1)
+                {
+                    return addresses.Single();
+                }
+
+                return $"msig-{string.Join("_", addresses).ToSha256()}";
             }
 
             if (IsUnrecognizedAddress(script))
