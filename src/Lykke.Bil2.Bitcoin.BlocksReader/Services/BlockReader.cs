@@ -62,7 +62,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                                     (int) vout.N,
                                     new Asset(new AssetId("BTC")),
                                     new UMoney(new BigInteger(vout.TxOut.Value.ToUnit(MoneyUnit.Satoshi)), 8),
-                                    addr != null ? new Address(vout.TxOut.ScriptPubKey.ExtractAddress(_network)) : null);
+                                    vout.TxOut.ScriptPubKey.ExtractAddress(_network));
                             })
                             .ToList(),
                         tx.Inputs.AsIndexedInputs()

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
-using Common;
+﻿using System.Linq;
 using IdentityModel;
+using Lykke.Bil2.SharedDomain;
 using NBitcoin;
 
 namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
@@ -14,7 +13,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
             return script.ToOps().First().Code == OpcodeType.OP_RETURN;  //https://en.bitcoin.it/wiki/OP_RETURN data transaction without address
         }
 
-        public static string ExtractAddress(this Script script, Network network)
+        public static Address ExtractAddress(this Script script, Network network)
         {
             var common = script.GetDestinationAddress(network);
             if (common != null)
@@ -65,7 +64,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
                 return null;
             }
 
-            throw new FormatException($"Unable to extract address from {script}");
+            return Address.Unrecognized;
         }
     }
 }

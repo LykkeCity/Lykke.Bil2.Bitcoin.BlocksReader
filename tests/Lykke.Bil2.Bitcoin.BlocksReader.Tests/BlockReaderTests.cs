@@ -32,7 +32,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
         {
             var blReader = new BlockReader(_rpcClient, Network.TestNet);
 
-            await blReader.ReadBlockAsync(225460, _blockListenerMock.Object);
+            await blReader.ReadBlockAsync(240065, _blockListenerMock.Object);
 
             _blockListenerMock.Verify(x => x.HandleHeaderAsync(
                 It.Is<BlockHeaderReadEvent>(ev=> 
