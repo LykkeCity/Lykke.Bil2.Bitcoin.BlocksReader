@@ -21,7 +21,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
             var tx = Transaction.Parse(rawTx, Network.GetNetwork(network));
             var extractAddress = tx.Outputs[outputNum].ScriptPubKey.ExtractAddress(Network.GetNetwork(network));
 
-            Assert.AreEqual(address, extractAddress);
+            Assert.AreEqual(address, extractAddress.ToString());
         }
 
         [TestCase("0100000001d0e67013c4c8512cb7e4cfbb64bcea38d854cab6db36b6af0113109ce489ee7201000000fdfd000048304502210096df80136e578ce721589d61cb2efcf5e4748c6a3a6ab7e34d0fc12e3e748e2c02201049e22331794a5d99856105b096e3adb60b053562ad40ef6fe28b8bb70ca8f40147304402203f49e5198e7b14aeb59c26dc42a4207ede9d0d4a291e2ae6f2eb1809fbdba21a022030e74e63e752296499e18f772e00d26c206972029f3b8c0b7d50298a1734241f014c69522103459d20315debcb8b4c47c5f0ff356c7764ea3b103487487a1ed2bbcac3f18bc221023b0fd344dbd13d25663adc5a31d269ceac90b6dfc3ac8af8d5b31aa10ba366fc21032233fc2b5916568cd5177e9b88feda049195418cbadb2c6741e8df8967ec84ab53aeffffffff030000000000000000106a0e69643a64616e6f6d6172722e69647c150000000000001976a9146ada8b2f3ce136abedd949e749ccf5574d867d5b88ac557d0c000000000017a9148e1719fb937c598ddd0760118b5455fc4f31891b8700000000",
