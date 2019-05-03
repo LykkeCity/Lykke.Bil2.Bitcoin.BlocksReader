@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Lykke.Bil2.Bitcoin.BlocksReader.Services;
 using Lykke.Bil2.Bitcoin.BlocksReader.Settings;
 using Lykke.Bil2.Sdk.BlocksReader;
+using Lykke.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using NBitcoin;
@@ -34,6 +35,10 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader
                             Network.GetNetwork(ctx.Settings.CurrentValue.Network)),
                         Network.GetNetwork(ctx.Settings.CurrentValue.Network)
                     );
+
+#if DEBUG
+                options.RabbitVhost = AppEnvironment.EnvInfo;
+#endif
             });
         }
 

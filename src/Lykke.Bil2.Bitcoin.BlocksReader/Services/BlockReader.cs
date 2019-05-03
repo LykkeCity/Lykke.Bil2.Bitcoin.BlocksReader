@@ -34,35 +34,46 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
             }
             catch (RPCException e) when(e.RPCCode == RPCErrorCode.RPC_INVALID_PARAMETER)
             {
-                await listener.HandleBlockNotFoundAsync(new BlockNotFoundEvent(blockNumber));
+                listener.HandleBlockNotFound(new BlockNotFoundEvent(blockNumber));
 
                 return;
             }
 
             var blockHash = block.Header.GetHash().ToString();
+            var blockId = new BlockId(blockHash);
 
-            await listener.HandleRawBlockAsync(block.ToBytes().EncodeToBase64(), new BlockId(blockHash));
+            listener.HandleRawBlock(block.ToBytes().EncodeToBase64(), blockId);
+
+            var transactionsListener = listener.StartBlockTransactionsHandling(new BlockHeaderReadEvent(
+                blockNumber,
+                blockHash,
+                block.Header.BlockTime.DateTime,
+                block.GetSerializedSize(),
+                block.Transactions.Count,
+                block.Header.HashPrevBlock.ToString()
+            ));
             
-            for (int i = 0; i < block.Transactions.Count; i++)
+            for (var i = 0; i < block.Transactions.Count; i++)
             {
                 var tx = block.Transactions[i];
+                var txId = tx.GetHash().ToString();
 
-                await listener.HandleExecutedTransactionAsync(
-                    tx.ToBytes().EncodeToBase64(),
-                    new TransferCoinsTransactionExecutedEvent(
-                        blockHash,
+                transactionsListener.HandleExecutedTransaction
+                (
+                    new TransferCoinsExecutedTransaction
+                    (
                         i,
-                        tx.GetHash().ToString(),
+                        txId,
                         tx.Outputs.AsIndexedOutputs()
-                            .Select(vout =>
+                            .Select(output =>
                             {
-                                var addr = vout.TxOut.ScriptPubKey.ExtractAddress(_network);
+                                var address = output.TxOut.ScriptPubKey.ExtractAddress(_network);
 
                                 return new ReceivedCoin(
-                                    (int) vout.N,
+                                    (int) output.N,
                                     new Asset(new AssetId("BTC")),
-                                    new UMoney(new BigInteger(vout.TxOut.Value.ToUnit(MoneyUnit.Satoshi)), 8),
-                                    vout.TxOut.ScriptPubKey.ExtractAddress(_network));
+                                    new UMoney(new BigInteger(output.TxOut.Value.ToUnit(MoneyUnit.Satoshi)), 8),
+                                    address);
                             })
                             .ToList(),
                         tx.Inputs.AsIndexedInputs()
@@ -72,16 +83,9 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
                         isIrreversible: false
                     )
                 );
-            }
 
-            await listener.HandleHeaderAsync(new BlockHeaderReadEvent(
-                blockNumber,
-                blockHash,
-                block.Header.BlockTime.DateTime,
-                block.GetSerializedSize(),
-                block.Transactions.Count,
-                block.Header.HashPrevBlock.ToString()
-            ));
+                await transactionsListener.HandleRawTransactionAsync(tx.ToBytes().EncodeToBase64(), txId);
+            }
         }
     }
 }
