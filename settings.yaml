@@ -24,6 +24,8 @@ Db:
         settings-key: Bitcoin-LogsConnString
         types:
             - AzureTableStorage
+    MaxTransactionsSavingParallelism:
+        settings-key: Bitcoin-MaxTransactionsSavingParallelism
 
 Network:
     settings-key: Bitcoin-Network
@@ -39,6 +41,8 @@ Rpc:
 RabbitMq:
     ConnString:
         settings-key: Bitcoin-RabbitConnString	
+    TransactionsBatchSize:
+        settings-key: Bitcoin-TransactionsBatchSize
     Vhost:
         settings-key: Bitcoin-BlocksReader-RabbitVhost
         types:

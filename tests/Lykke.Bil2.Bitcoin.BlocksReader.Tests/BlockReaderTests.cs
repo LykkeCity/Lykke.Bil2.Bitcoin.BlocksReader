@@ -116,7 +116,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Tests
 
             await blReader.ReadBlockAsync(int.MaxValue, _blockListenerMock.Object);
 
-            _blockListenerMock.Verify(x => x.HandleBlockNotFound(It.Is<BlockNotFoundEvent>(ev => ev.BlockNumber == int.MaxValue)), Times.Once);
+            _blockListenerMock.Verify(x => x.HandleNotFoundBlock(It.Is<BlockNotFoundEvent>(ev => ev.BlockNumber == int.MaxValue)), Times.Once);
         }
     }
 }

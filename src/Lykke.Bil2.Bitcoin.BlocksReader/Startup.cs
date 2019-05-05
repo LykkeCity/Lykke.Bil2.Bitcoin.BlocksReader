@@ -23,7 +23,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader
             return services.BuildBlockchainBlocksReaderServiceProvider<AppSettings>(options =>
             {
                 options.IntegrationName = IntegrationName;
-
+                
                 // Register required service implementations:
 
                 options.BlockReaderFactory = ctx =>
@@ -36,6 +36,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader
                         Network.GetNetwork(ctx.Settings.CurrentValue.Network)
                     );
 
+                options.UseTransferCoinsTransactionsModel();
 #if DEBUG
                 options.RabbitVhost = AppEnvironment.EnvInfo;
 #endif

@@ -34,7 +34,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
             }
             catch (RPCException e) when(e.RPCCode == RPCErrorCode.RPC_INVALID_PARAMETER)
             {
-                listener.HandleBlockNotFound(new BlockNotFoundEvent(blockNumber));
+                listener.HandleNotFoundBlock(new BlockNotFoundEvent(blockNumber));
 
                 return;
             }
