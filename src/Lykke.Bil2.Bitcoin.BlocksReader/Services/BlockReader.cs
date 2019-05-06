@@ -56,7 +56,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services
             for (var i = 0; i < block.Transactions.Count; i++)
             {
                 var tx = block.Transactions[i];
-                var txId = tx.GetHash().ToString();
+                var txId = tx.ExtractHash(block.Header);
 
                 transactionsListener.HandleExecutedTransaction
                 (
