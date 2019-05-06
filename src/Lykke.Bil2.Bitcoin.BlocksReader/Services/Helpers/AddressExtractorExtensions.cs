@@ -10,7 +10,7 @@ namespace Lykke.Bil2.Bitcoin.BlocksReader.Services.Helpers
 
         public static bool IsUnrecognizedAddress(this Script script)
         {
-            return script.ToOps().First().Code == OpcodeType.OP_RETURN;  //https://en.bitcoin.it/wiki/OP_RETURN data transaction without address
+            return script.ToOps().FirstOrDefault()?.Code == OpcodeType.OP_RETURN;  //https://en.bitcoin.it/wiki/OP_RETURN data transaction without address
         }
 
         public static Address ExtractAddress(this Script script, Network network)
